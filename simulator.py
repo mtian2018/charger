@@ -12,7 +12,7 @@ class ServerProtocol:
 
     def datagram_received(self, data, addr):
         message = data.decode()
-        print('Received UDPasd %r from %s \n' % (message, addr))
+        print('Received UDP %r from %s \n' % (message, addr))
 
         if message == '001':
             print('001 received')

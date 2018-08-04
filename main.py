@@ -9,7 +9,6 @@ import aiocoap
 from motor import motor_asyncio
 import aiohttp
 
-
 #database
 db_uri = "mongodb//localhost:27017"
 db_client = motor_asyncio.AsyncIOMotorClient()
@@ -18,9 +17,9 @@ coll = db.jobs
 
 
 logging.basicConfig(level=logging.INFO)
-# logging.getLogger("coap-server").setLevel(logging.DEBUG)
+logging.getLogger("coap-server").setLevel(logging.DEBUG)
 
-#coap server
+
 class TimeResource(resource.Resource):
 
     def __init__(self):
