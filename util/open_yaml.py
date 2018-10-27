@@ -10,7 +10,7 @@ async def open_yaml(path):
 if __name__ == '__main__':
     import asyncio
 
-    name = '../wechat/data_mart.yaml'
+    name = '../wechat/data_mart.yml'
     loop = asyncio.get_event_loop()
     y = loop.run_until_complete(open_yaml(name))
     print(y)
