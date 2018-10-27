@@ -13,9 +13,10 @@ async def post_handler(req):
     return web.Response(text='post received')
 
 
-app = web.Application()
-app.add_routes([web.get('/', get_handler),
-                web.get('/{name}', get_handler),
-                web.post('/', post_handler)])
-web.run_app(app)
+if __name__ == '__main__':
+    app = web.Application()
+    app.add_routes([web.get('/', get_handler),
+                    web.get('/{name}', get_handler),
+                    web.post('/', post_handler)])
+    web.run_app(app)
 
