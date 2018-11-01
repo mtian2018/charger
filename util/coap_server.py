@@ -69,7 +69,7 @@ class Observation(resource.ObservableResource):
 
     def __init__(self, name):
         super().__init__()
-        # self.handle = None
+        self.handle = None
         self.name = name
 
     async def add_observation(self, request, serverobservation):
@@ -88,11 +88,20 @@ class Observation(resource.ObservableResource):
             self.update_observation_count(len(self._observations))
         serverobservation.accept(_cancel)
         self.update_observation_count(len(self._observations))
+        # await super().add_observation(request, serverobservation)
+
+    def updated_state(self, response=None):
+        """Call this whenever the resource was updated, and a notification
+        should be sent to observers."""
+
+        for o in self._observations:
+            o.trigger(response)
 
     async def render_get(self, req):
         name = req.opt.uri_query
         if name:
             name = name[0].split('=')[1]
+            # if name in db.device
             msg = "observation established".encode('ascii')
         else:
             msg = ''
