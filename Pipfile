@@ -8,6 +8,7 @@ aiohttp = "*"
 aiocoap = "*"
 uvloop = "*"
 motor = "*"
+linkheader = "*"
 
 [dev-packages]
 
