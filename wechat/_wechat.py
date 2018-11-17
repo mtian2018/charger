@@ -1,7 +1,6 @@
 import asyncio
 from aiohttp import web
-from xml.etree import ElementTree as ET
-# from lxml import etree
+from lxml import etree
 from time import time
 from motor import motor_asyncio
 import hashlib
@@ -45,7 +44,7 @@ class ClientProtocol:
 async def post_handler(request):
 
     req = await request.text()
-    root = ET.fromstring(req)
+    root = etree.fromstring(req)
     msg_type = root.find('MsgType').text
     result = 'success'
 

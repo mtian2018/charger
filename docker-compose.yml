@@ -1,0 +1,16 @@
+version: "3.2"
+services:
+  coap:
+    build: .
+    ports:
+      - "5683:5683/udp"
+    container_name: "coap"
+    volumes:
+     - type: "bind"
+       source: "."
+       target: "/code"
+  db:
+    image: mongo:latest
+    volumes:
+      - ~/docker_data/mongo:/data/db
+    container_name: "mongo"

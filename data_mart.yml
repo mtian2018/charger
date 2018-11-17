@@ -1,8 +1,0 @@
-token: wechat
-appID: wx45e20cab67e7da67
-appSecret: 7263c4df475960cc0d2cc3908bc69349
-encodingAESKey: afPsLj0rV0yGBtZRyWpGWTGFgsrvI40XBCZrnwUURFk
-apiDomain: https://api.weixin.qq.com/cgi-bin
-apiURL:
-    accessTokenApi: "%s/token?grant_type=client_credential&appid=%s&secret=%s"
-    templateMsg: "%s/message/template/send?access_token=%s"

@@ -1,3 +1,5 @@
+# this should be a stand alone program, only use for the first time setup
+
 from aiohttp import web
 import hashlib
 
@@ -9,7 +11,7 @@ async def get_handler(request):
         timestamp = request.query['timestamp']
         nonce = request.query['nonce']
         echostr = request.query['echostr']
-        token = 'wechat'
+        token = 'osram'
 
         token_list = [token, timestamp, nonce]
         token_list.sort()
@@ -32,7 +34,7 @@ async def get_handler(request):
         return web.Response()
 
 app = web.Application()
-app.add_routes([web.get('/setup', get_handler)])
+app.add_routes([web.get('/wx', get_handler)])
 
 try:
     web.run_app(app)

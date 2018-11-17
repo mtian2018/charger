@@ -1,106 +1,106 @@
 import asyncio
-from aiohttp import web
+from time import time
 from xml.etree import ElementTree as ET
-# from lxml import etree
-from motor import motor_asyncio
-import json
-from py.utils.udp_client import send_udp
-from py.wechat.wx_xml import form_xml
-from py.wechat.get_token import AccessToken
-from py.utils.open_yaml import open_yaml
-from py.utils.http_client import http_post
-from py.wechat.wx_json import j_dict
-import logging
 
-# asyncio.AbstractEventLoop.set_debug(enabled=True)
-# logging.getLogger('asyncio').setLevel(logging.WARNING)
-logging.basicConfig(level=logging.WARNING)
-# logging.basicConfig(level=logging.INFO)
-# logging.basicConfig(level=logging.DEBUG)
+import aiocoap
+import aioredis
+from aiocoap.numbers import POST
+from aiohttp import web
+from motor.motor_asyncio import AsyncIOMotorClient
 
-# database
-db_uri = "mongodb//localhost:27017"     # didn't work
-db_client = motor_asyncio.AsyncIOMotorClient()
-db = db_client.test
-coll = db.jobs
-
-loop = asyncio.get_event_loop()
-yaml_guy = open_yaml('./data_mart.yaml')
-token_boy = AccessToken()
-token_boy.get_token()
+from wechat.wx_center import WxMart
+from wechat.wx_msg import MSG_HELP, XML_REPLY
 
 
-async def post_handler(request):
+async def relay_receiver(req):
+    # check serial, source ip, etc.
+    # if req == 'finished':
+    # send custom msg
+    # if req = 'started':
+    # if req = 'unplugged':
+    # if req = 'error':
+    print(req)
+    # push msg
+    return web.Response()
 
-    req = await request.text()
+
+async def post_handler(req):
+    req = await req.text()
+
+    # if req.ip not in wx_info.ip:
+    #   loop.create_task(wx_info.get_ip()
+    #   return web.Response()
+
     root = ET.fromstring(req)
     msg_type = root.find('MsgType').text
-    result = 'success'
+    to_user = root.find('FromUserName').text
+    from_user = root.find('ToUserName').text
+    resp = 'success'     # wechat default reply
 
-    if msg_type == 'event':
-
+    if msg_type == 'text':
+        content = root.find('Content').text
+        if 'yy' in content:
+            pass
+        elif 'ms' in content:
+            pass
+        else:
+            msg = MSG_HELP
+    elif msg_type == 'event':
         event_type = root.find('Event').text
 
         if event_type == 'CLICK':
             event_key = root.find('EventKey').text
 
-            if event_key == 'menu_charge':
+            serial = 'MA345678'     # check if online
+            if event_key not in ('help', 'inquiry'):
+                cmd, arg = event_key.split('_')
 
-                msg = '007'
-                doc = {'device': '001', 'status': 'starting'}
-                content = 'start charging'
+                if 'charge' in event_key:
+                    arg = time() + int(arg) * 3600
 
-        elif event_type == 'SCAN':
-            event_key = root.find('EventKey').text
+                asyncio.ensure_future(
+                    mongo.devices.insert_one({'serial': serial, 'user': to_user,
+                                              'command': cmd, 'arg': arg, 'status': 'received'}))
 
-            msg = '001'
-            doc = {'device': event_key, 'status': 'awaking'}
-            content = f'your device number is: {event_key}'
+            if event_key not in ('help', 'inquiry'):
+                # loop.create_task gives warning
+                asyncio.ensure_future(pub.publish_json('ch:1', [serial, event_key]))
 
-        await send_udp(loop, msg)
-        await coll.insert_one(doc)
-        result = form_xml(root, content)
+            msg = wx_mart.msg_dict.get(event_key)
 
-    else:
-        pass
+    resp = XML_REPLY.format(to_user, from_user, time(), msg)
 
-    return web.Response(body=result)
-
-
-async def relay_handler(request):
-
-    req = await request.text()
-    await asyncio.sleep(1)
-
-    if req == 'ready':
-        print('ready')
-        result = {
-            "touser": "ofdEZ0r27GCXJDqxmsdKbTcIk10I",
-            "template_id": "hz1GJfToavKMhLl8v0boo5y-C1QpUEpAWzr2NjDtTJI"
-        }
-
-    else:
-        print('done')
-        # write db
-        doc = {'device': '001', 'status': 'starting'}
-        await coll.insert_one(doc)
-        # to_user = await coll.find_one({})
-
-    await asyncio.sleep(1)
+    return web.Response(body=resp)
 
 
-    result = json.dumps(j_dict)
+loop = asyncio.get_event_loop()
+wx_mart = WxMart(loop)
+mongo = AsyncIOMotorClient().test
 
-    token = await token_boy.get_token()
-    # print(token) try delay 5 seconds
-    url = yaml_guy['templateMsgApi'] + token     # timing?
-
-    res = await http_post(url, result)
-    # print(res)
-    return web.Response(body='')     # necessary?
-
+pub = loop.run_until_complete(
+    aioredis.create_redis('redis://112.74.112.57:6379'))
 
 app = web.Application()
-app.add_routes([web.post('/setup', post_handler),
-                web.post('/relay', relay_handler)])
-web.run_app(app)
+app.add_routes([web.post('/wx', post_handler)])
+
+
+async def start_web():
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, 'localhost', 8080)
+    await site.start()
+
+loop.create_task(start_web())
+
+try:
+    loop.run_forever()
+except KeyError:
+    pass
+finally:
+    pub.close()
+
+    loop.run_until_complete(pub.wait_closed())
+    asyncio.ensure_future(exit())
+    loop.close()
+
+
