@@ -1,0 +1,9 @@
+FROM python:3.6-alpine as wheel 
+COPY requirements.txt .
+RUN apk add build-base
+RUN pip install -r requirements.txt
+
+FROM python:3.6-alpine as coap 
+COPY --from=wheel /root/.cache/pip/wheels /root/.cache/pip/wheels  
+COPY --from=wheel requirements.txt .
+RUN pip install -r requirements.txt && rm -rf /root/.cache

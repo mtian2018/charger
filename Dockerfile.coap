@@ -1,0 +1,5 @@
+FROM charger_python:coap
+COPY ./coap /code/coap/
+COPY ./common /code/common/
+COPY coap_server.py /code/
+CMD ["python", "/code/coap_server.py"]

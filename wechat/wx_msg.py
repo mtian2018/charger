@@ -1,14 +1,15 @@
-MSG_SENT = ("command has been sent\n"
-            "you will be notified")
+MSG_SENT = "命令已发送，请等待通知"
 
-MSG_LATER = "charging scheduled for later"
+MSG_LATER = "预约中，届时充电"
 
-MSG_HELP = ("help\n"
-            "help\n")
+MSG_HELP = ("帮助\n"
+            "充电\n"
+            "设置")
 
-MSG_MODE = "changing mode"
+MSG_MODE = "模式设置中"
+MSG_INQ = "查询中，请稍侯"
 
-msg_dict = {
+MSG_DICT = {
             'charge_0': MSG_SENT,
             'charge_1': MSG_LATER,
             'charge_2': MSG_LATER,
@@ -16,14 +17,14 @@ msg_dict = {
             'stop': MSG_SENT,
             'set_0': MSG_MODE,
             'set_1': MSG_MODE,
-            'inquiry': MSG_SENT,
+            'inquiry': MSG_INQ,
             'help': MSG_HELP,
 }
 
 XML_REPLY = '''<xml>
-        <ToUserName><![CDATA[{to_user}]]></ToUserName>
-        <FromUserName><![CDATA[{from_user}]]></FromUserName>
-        <CreateTime>{create_time}</CreateTime>
+        <ToUserName><![CDATA[{}]]></ToUserName>
+        <FromUserName><![CDATA[{}]]></FromUserName>
+        <CreateTime>{}</CreateTime>
         <MsgType><![CDATA[text]]></MsgType>
-        <Content><![CDATA[{content}]]></Content>
+        <Content><![CDATA[{}]]></Content>
         </xml>'''

@@ -1,0 +1,22 @@
+version: "3.2"
+services:
+  db:
+    image: mongo:latest
+    volumes:
+      - ~/docker_data/mongo:/data/db
+    container_name: "mongo"
+  redis:
+    image: redis:alpine
+    volumes:
+      - ~/docker_data/redis:/data
+    container_name: redis
+  coap:
+    build: .
+    ports:
+      - "5683:5683/udp"
+    container_name: "coap"
+    volumes:
+     - type: "bind"
+       source: "."
+       target: "/docker"
+

@@ -2,9 +2,7 @@ import asyncio
 from time import time
 from xml.etree import ElementTree as ET
 
-import aiocoap
 import aioredis
-from aiocoap.numbers import POST
 from aiohttp import web
 from motor.motor_asyncio import AsyncIOMotorClient
 
@@ -58,9 +56,12 @@ async def post_handler(req):
                 if 'charge' in event_key:
                     arg = time() + int(arg) * 3600
 
-                asyncio.ensure_future(
-                    mongo.devices.insert_one({'serial': serial, 'user': to_user,
-                                              'command': cmd, 'arg': arg, 'status': 'received'}))
+                asyncio.ensure_future(mongo.devices.insert_one({'serial': serial,
+                                                                'user': to_user,
+                                                                'command': cmd,
+                                                                'arg': arg,
+                                                                'status': 'received'})
+                                      )
 
             if event_key not in ('help', 'inquiry'):
                 # loop.create_task gives warning
