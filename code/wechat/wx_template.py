@@ -1,8 +1,7 @@
 import aiohttp
 import asyncio
-import async_timeout
 import json
-from wechat.wx_center import WxMart
+from code.wechat import WxMart
 
 GREEN = "#00FF00"
 BLUE = "#0000FF"

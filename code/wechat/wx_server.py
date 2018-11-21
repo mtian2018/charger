@@ -6,8 +6,8 @@ import aioredis
 from aiohttp import web
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from wechat.wx_center import WxMart
-from wechat.wx_msg import MSG_HELP, XML_REPLY
+from code.wechat import WxMart
+from wx_msg import MSG_HELP, XML_REPLY
 
 
 async def relay_receiver(req):

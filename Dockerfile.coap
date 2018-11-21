@@ -1,5 +1,7 @@
 FROM charger_python:coap
-COPY ./coap /code/coap/
-COPY ./common /code/common/
-COPY coap_server.py /code/
+WORKDIR /code
+COPY ./code/coap /code/coap/
+COPY ./code/common /code/common/
+COPY ./code/coap_server.py /code/
+RUN mkdir log
 CMD ["python", "/code/coap_server.py"]

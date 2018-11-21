@@ -4,8 +4,8 @@ from datetime import datetime, timedelta, time
 
 import aiohttp
 
-from util.open_yaml import open_yaml
-from wechat.wx_msg import MSG_DICT
+from open_yaml import open_yaml
+from wx_msg import MSG_DICT
 
 yaml_file = './wx_string.yaml'
 

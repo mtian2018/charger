@@ -7,7 +7,7 @@ import string
 
 
 async def test_obs():
-    uri = 'coap://192.168.1.124:5683/obs'
+    uri = 'coap://localhost/obs'
     # uri = 'coap://112.74.112.57:5683/obs'
 
     context = await aiocoap.Context.create_client_context()

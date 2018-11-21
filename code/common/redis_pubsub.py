@@ -1,6 +1,6 @@
 import aioredis
 import asyncio
-from coap.mapping import command_mapping
+from .mapping import command_mapping
 
 
 async def sub_read():

@@ -11,9 +11,10 @@ import yaml
 from aiocoap import resource
 from aiocoap.numbers import BAD_REQUEST, CONTENT
 from motor.motor_asyncio import AsyncIOMotorClient
+from pymongo.errors import ServerSelectionTimeoutError
 
-from common.redis_pubsub import RedisPubSub
 from coap.registration import Registrar
+from common.redis_pubsub import RedisPubSub
 
 # from contextlib import suppress
 fdir = os.path.dirname(__file__)
@@ -57,24 +58,32 @@ class Test(resource.Resource):
 
 
 # globals
-mongo = AsyncIOMotorClient('mongodb://0.0.0.0:27017').test
-# mongo = AsyncIOMotorClient('mongodb://db:27017').test
-mongo.jobs.drop()
-mongo.devices.drop()
-
 loop = asyncio.get_event_loop()
 loop.set_debug(True)
+
+# reconnect?
+# mongo = AsyncIOMotorClient('mongodb://0.0.0.0:27017', serverSelectionTimeoutMS=1000)
+mongo = AsyncIOMotorClient('mongodb://db:27017', serverSelectionTimeoutMS=5000)
+try:
+    loop.run_until_complete(mongo.server_info())
+    logging.info('connected to mongodb')
+except ServerSelectionTimeoutError:
+    sys.exit('Cannot connect to mongodb')
+
+db = mongo.test
+mongo.drop_database(db)
+# loop.run_until_complete(db.jobs.drop())
+# loop.run_until_complete(db.devices.drop())
+
 redis = RedisPubSub()
 root = resource.Site()
-reg = Registrar(loop, root, mongo)
+reg = Registrar(loop, root, db)
 
 root.add_resource(('.well-known', 'core'),
                   resource.WKCResource(root.get_resources_as_linkheader))
 root.add_resource(('obs',), reg)
 root.add_resource(('test',), Test())
 asyncio.Task(aiocoap.Context.create_server_context(root))
-
-logging.info('coap_server started')
 
 try:
     loop.run_forever()
